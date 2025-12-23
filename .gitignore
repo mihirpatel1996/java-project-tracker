@@ -1,8 +1,27 @@
 HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
+
+### Backend ###
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/!**/src/main/**/target/
+backend/!**/src/test/**/target/
+
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+### Frontend (Node.js/React) ###
+frontend/node_modules/
+frontend/.pnp
+frontend/.pnp.js
+frontend/coverage/
+frontend/build/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
 
 ### STS ###
 .apt_generated
@@ -14,10 +33,18 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
+.vscode/
 *.iws
 *.iml
 *.ipr
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
 
 ### NetBeans ###
 /nbproject/private/
@@ -32,6 +59,8 @@ build/
 ### VS Code ###
 .vscode/
 
-
+### Logs ###
 *.log
+
+### Environment ###
 .env
