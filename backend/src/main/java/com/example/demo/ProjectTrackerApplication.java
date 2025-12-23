@@ -13,15 +13,15 @@ public class ProjectTrackerApplication {
 		SpringApplication.run(ProjectTrackerApplication.class, args);
 	}
 
-	//	Global configuration of CORS
-	@Bean
-	public WebMvcConfigurer corsConfirgurer(){
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/")
-						.allowedOrigins("http://localhost:9000");
-			}
-		};
-	}
+//	//	Global configuration of CORS
+//	@Bean
+//	public WebMvcConfigurer corsConfirgurer(){
+//		return new WebMvcConfigurer() {
+//			@Override
+//			public void addCorsMappings(CorsRegistry registry) {
+//				registry.addMapping("/")
+//						.allowedOrigins("http://localhost:9000");
+//			}
+//		};
+//	}
 }
