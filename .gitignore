@@ -10,15 +10,6 @@ backend/!**/src/test/**/target/
 !**/src/test/**/target/
 
 ### Frontend (Node.js/React) ###
-frontend/.pnp
-frontend/.pnp.js
-frontend/coverage/
-frontend/build/
-frontend/.env.local
-frontend/.env.development.local
-frontend/.env.test.local
-frontend/.env.production.local
-
 frontend/logs
 frontend/*.log
 frontend/npm-debug.log*
