@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ProjectController {
 
     @Autowired
@@ -19,23 +19,24 @@ public class ProjectController {
         return service.getProjects();
     }
 
-    @GetMapping("/project/{id}")
+    @GetMapping("/projects/{projId}")
     public Project getProjectById(@PathVariable int projId){
         return service.getProjectById(projId);
     }
 
-    @PostMapping("/project")
-    public void addProject(@RequestBody Project proj){
-        service.addProject(proj);
+    @PostMapping("/projects")
+    public Project addProject(@RequestBody Project proj){
+        System.out.println("Received project for creation: " + proj);
+        return service.addProject(proj);
     }
 
-    @PutMapping("/project/{id}")
+    @PutMapping("/projects/{projId}")
     public void updateProject(@RequestBody Project proj){
         service.updateProject(proj);
     }
 
-    @DeleteMapping("/projects/{id}")
-    public void deleteProject(@RequestParam int projId){
+    @DeleteMapping("/projects/{projId}")
+    public void deleteProject(@PathVariable int projId){
         service.deleteProject(projId);
     }
 }

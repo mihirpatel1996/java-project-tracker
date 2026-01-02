@@ -21,8 +21,8 @@ public class ProjectService {
         return repo.findById(projId).orElse(new Project());
     }
 
-    public void addProject(Project proj){
-        repo.save(proj);
+    public Project addProject(Project proj){
+        return repo.save(proj);
     }
 
     public void updateProject(Project proj){

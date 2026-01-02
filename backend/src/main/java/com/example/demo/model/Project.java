@@ -16,7 +16,7 @@ public class Project {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private int projId;
+    private Integer projId;
     private String projName;
     private String clientCompany;
     private String clientEmail;
