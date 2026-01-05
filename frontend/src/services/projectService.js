@@ -12,13 +12,6 @@ export const projectService = {
       console.error('Error fetching projects:', error);
       throw error;
     }
-
-    // const response = await fetch(`${API_BASE_URL}/projects`);
-    // if (!response.ok) {
-    //   throw new Error('Failed to fetch projects');
-    // }
-    // console.log("getAllProjects called");
-    // return response.json();
   },
 
   // Get single project by ID
@@ -36,13 +29,9 @@ export const projectService = {
   // Create new project
   async createProject(project) {
     try{
-      console.log("creating project: "+project);
-      console.log("project type:"+typeof(project));
       // strip projId if present/null before sending
       const { projId, ...payload } = project || {};
 
-      // DEBUG: log exact JSON sent to server
-      console.log('createProject payload JSON:', JSON.stringify(payload));
       const response = await axios.post(`${API_BASE_URL}/projects`, payload,
         {
           headers: {
@@ -61,28 +50,40 @@ export const projectService = {
 
   // Update existing project
   async updateProject(id, project) {
-    const response = await fetch(`${API_BASE_URL}/project/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(project),
-    });
-    if (!response.ok) {
-      throw new Error('Failed to update project');
+    try{
+      const response = await axios.put(`${API_BASE_URL}/projects/${id}`, project, 
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      return response.data;
     }
-    return response;
+    catch(error){
+      console.log("Error updating project:", error);
+      return error;
+    }
   },
 
   // Delete project
   async deleteProject(id) {
-    const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error('Failed to delete project');
+    try{
+      const response = await axios.delete(`${API_BASE_URL}/projects/${id}`);
+      return response.data;
+
+    } 
+    catch(error){
+      console.log("Error deleting project:"+ error);
+      return error;
     }
-    return response;
+    // const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
+    //   method: 'DELETE',
+    // });
+    // if (!response.ok) {
+    //   throw new Error('Failed to delete project');
+    // }
+    // return response;
   },
 };
 

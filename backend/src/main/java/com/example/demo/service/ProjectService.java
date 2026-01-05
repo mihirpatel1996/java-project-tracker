@@ -25,8 +25,8 @@ public class ProjectService {
         return repo.save(proj);
     }
 
-    public void updateProject(Project proj){
-        repo.save(proj);
+    public Project updateProject(Project proj){
+        return repo.save(proj);
     }
 
     public void deleteProject(int projId){

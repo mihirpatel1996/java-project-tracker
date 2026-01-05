@@ -31,8 +31,8 @@ public class ProjectController {
     }
 
     @PutMapping("/projects/{projId}")
-    public void updateProject(@RequestBody Project proj){
-        service.updateProject(proj);
+    public Project updateProject(@RequestBody Project proj){
+        return service.updateProject(proj);
     }
 
     @DeleteMapping("/projects/{projId}")
