@@ -2,11 +2,16 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8080';
 
+// Create axios instance with credentials
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,  // Important for cookies/session
+});
+
 export const projectService = {
-  // Get all projects
   async getAllProjects() {
     try {
-      const response = await axios.get(`${API_BASE_URL}/projects`);
+      const response = await api.get('/projects');
       return response.data;
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -14,76 +19,45 @@ export const projectService = {
     }
   },
 
-  // Get single project by ID
   async getProjectById(id) {
-    try{
-      const response = await axios.get(`{API_BASE_URL}/projects/${id}`);
+    try {
+      const response = await api.get(`/projects/${id}`);
       return response.data;
-    }
-    catch(error){
+    } catch (error) {
       console.error('Error fetching project:', error);
       throw error;
     }
   },
 
-  // Create new project
   async createProject(project) {
-    try{
-      // strip projId if present/null before sending
+    try {
       const { projId, ...payload } = project || {};
-
-      const response = await axios.post(`${API_BASE_URL}/projects`, payload,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      
+      const response = await api.post('/projects', payload);
       return response.data;
-    }
-    catch(error){
-      console.log('Error creating project:', error);
+    } catch (error) {
+      console.error('Error creating project:', error);
       throw error;
     }
   },
 
-  // Update existing project
   async updateProject(id, project) {
-    try{
-      const response = await axios.put(`${API_BASE_URL}/projects/${id}`, project, 
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+    try {
+      const response = await api.put(`/projects/${id}`, project);
       return response.data;
-    }
-    catch(error){
-      console.log("Error updating project:", error);
-      return error;
+    } catch (error) {
+      console.error('Error updating project:', error);
+      throw error;
     }
   },
 
-  // Delete project
   async deleteProject(id) {
-    try{
-      const response = await axios.delete(`${API_BASE_URL}/projects/${id}`);
+    try {
+      const response = await api.delete(`/projects/${id}`);
       return response.data;
-
-    } 
-    catch(error){
-      console.log("Error deleting project:"+ error);
-      return error;
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      throw error;
     }
-    // const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
-    //   method: 'DELETE',
-    // });
-    // if (!response.ok) {
-    //   throw new Error('Failed to delete project');
-    // }
-    // return response;
   },
 };
 
