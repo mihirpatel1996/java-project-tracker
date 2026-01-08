@@ -1,4 +1,5 @@
 package com.example.demo.model;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +37,13 @@ public class User implements UserDetails {
     private String password;
 
     @Column(nullable = false)
+    private String companyName;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private String role = "USER"; // USER or ADMIN
+
+    @Column(nullable = false)
     @Builder.Default
     private Boolean emailVerified = false;
 
@@ -70,7 +78,7 @@ public class User implements UserDetails {
     // UserDetails implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     @Override
@@ -96,5 +104,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    // Helper method to check if user is admin
+    public boolean isAdmin() {
+        return "ADMIN".equalsIgnoreCase(role);
     }
 }

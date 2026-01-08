@@ -183,11 +183,18 @@ function HomePage() {
                   <div className="flex items-center gap-3">
                     {/* User Avatar with Initials */}
                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-                      {getInitials(user.name)}
+                      {getInitials(`${user.firstName} ${user.lastName}`)}
                     </div>
                     <div className="hidden sm:block">
-                      <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                      <p className="text-xs text-gray-500">{user.email}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</p>
+                        {user.role === 'ADMIN' && (
+                          <span className="px-1.5 py-0.5 text-xs font-medium bg-purple-100 text-purple-700 rounded">
+                            Admin
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500">{user.companyName}</p>
                     </div>
                   </div>
                   <button
@@ -314,6 +321,9 @@ function HomePage() {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Notify
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -351,6 +361,21 @@ function HomePage() {
                       >
                         {project.status}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      {project.emailNotifications ? (
+                        <span className="text-green-500" title="Email notifications enabled">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                          </svg>
+                        </span>
+                      ) : (
+                        <span className="text-gray-300" title="Email notifications disabled">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                          </svg>
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex gap-3">
@@ -438,26 +463,28 @@ function HomePage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Client Company
+                      <span className="text-xs text-gray-400 ml-1">(auto-assigned)</span>
                     </label>
                     <input
                       type="text"
                       name="clientCompany"
                       value={editFormData.clientCompany || ''}
-                      onChange={handleEditChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      disabled
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Client Email
+                      <span className="text-xs text-gray-400 ml-1">(auto-assigned)</span>
                     </label>
                     <input
                       type="email"
                       name="clientEmail"
                       value={editFormData.clientEmail || ''}
-                      onChange={handleEditChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      disabled
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
                     />
                   </div>
 
@@ -529,6 +556,43 @@ function HomePage() {
                       rows={4}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                     />
+                  </div>
+
+                  {/* Email Notifications Toggle */}
+                  <div className="md:col-span-2">
+                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg ${editFormData.emailNotifications ? 'bg-green-100' : 'bg-gray-200'}`}>
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            className={`h-5 w-5 ${editFormData.emailNotifications ? 'text-green-600' : 'text-gray-400'}`}
+                            viewBox="0 0 20 20" 
+                            fill="currentColor"
+                          >
+                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Email Notifications</p>
+                          <p className="text-xs text-gray-500">Receive email when project status changes</p>
+                        </div>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          name="emailNotifications"
+                          checked={editFormData.emailNotifications || false}
+                          onChange={(e) => {
+                            setEditFormData({
+                              ...editFormData,
+                              emailNotifications: e.target.checked,
+                            });
+                          }}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>

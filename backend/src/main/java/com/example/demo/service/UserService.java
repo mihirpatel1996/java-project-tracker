@@ -82,12 +82,14 @@ public class UserService implements UserDetailsService {
         String verificationCode = codeGenerator.generateCode();
         LocalDateTime codeExpiry = LocalDateTime.now().plusMinutes(CODE_EXPIRY_MINUTES);
 
-        // Create user
+        // Create user with companyName and default role
         User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail().toLowerCase())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .companyName(request.getCompanyName())
+                .role("USER") // Default role is USER
                 .emailVerified(false)
                 .enabled(false)
                 .verificationCode(verificationCode)
@@ -95,7 +97,7 @@ public class UserService implements UserDetailsService {
                 .build();
 
         userRepository.save(user);
-        logger.info("User registered successfully: {}", user.getEmail());
+        logger.info("User registered successfully: {} for company: {}", user.getEmail(), user.getCompanyName());
 
         // Send verification email
         emailService.sendVerificationEmail(user.getEmail(), user.getFirstName(), verificationCode);
@@ -184,7 +186,8 @@ public class UserService implements UserDetailsService {
 
             UserDTO userDTO = mapToUserDTO(user);
 
-            logger.info("User logged in successfully: {}", user.getEmail());
+            logger.info("User logged in successfully: {} (role: {}, company: {})",
+                    user.getEmail(), user.getRole(), user.getCompanyName());
 
             return AuthResponse.success("Login successful", token, userDTO);
         } catch (BadCredentialsException e) {
@@ -267,6 +270,8 @@ public class UserService implements UserDetailsService {
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .companyName(user.getCompanyName())
+                .role(user.getRole())
                 .emailVerified(user.getEmailVerified())
                 .createdAt(user.getCreatedAt())
                 .build();

@@ -29,6 +29,14 @@ public class Project {
     @Column(columnDefinition = "TEXT")
     private String projDetails;
 
+    // User ID who created this project
+    @Column(name = "created_by")
+    private Long createdBy;
+
+    // Email notifications for status updates
+    @Column(name = "email_notifications")
+    private Boolean emailNotifications = true;
+
     private LocalDateTime startDate;
     private LocalDateTime estCompDate;
     private LocalDateTime createdDate;

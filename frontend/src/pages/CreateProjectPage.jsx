@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import projectService from '../services/projectService';
 
 function CreateProjectPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -19,6 +21,17 @@ function CreateProjectPage() {
     startDate: '',
     estCompDate: '',
   });
+
+  // Auto-populate clientCompany and clientEmail from user data
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        clientCompany: user.companyName || '',
+        clientEmail: user.email || '',
+      }));
+    }
+  }, [user]);
 
   const projectTypes = [
     'Drug Discovery',
@@ -107,6 +120,17 @@ function CreateProjectPage() {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
+        {/* Email Notifications Info */}
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
+          <svg className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+          </svg>
+          <div>
+            <p className="text-blue-800 text-sm font-medium">Email Notifications Enabled</p>
+            <p className="text-blue-600 text-sm">You'll receive email updates when the project status changes. You can disable this in the project settings later.</p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Project Name */}
           <div className="col-span-2 md:col-span-1">
@@ -142,37 +166,35 @@ function CreateProjectPage() {
             />
           </div>
 
-          {/* Client Company */}
+          {/* Client Company - Read Only */}
           <div className="col-span-2 md:col-span-1">
             <label htmlFor="clientCompany" className="block text-sm font-medium text-gray-700 mb-1">
-              Client Company <span className="text-red-500">*</span>
+              Client Company
+              <span className="text-xs text-gray-400 ml-1">(auto-assigned from your profile)</span>
             </label>
             <input
               type="text"
               id="clientCompany"
               name="clientCompany"
               value={formData.clientCompany}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter client company name"
+              disabled
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
             />
           </div>
 
-          {/* Client Email */}
+          {/* Client Email - Read Only */}
           <div className="col-span-2 md:col-span-1">
             <label htmlFor="clientEmail" className="block text-sm font-medium text-gray-700 mb-1">
-              Client Email <span className="text-red-500">*</span>
+              Client Email
+              <span className="text-xs text-gray-400 ml-1">(auto-assigned from your profile)</span>
             </label>
             <input
               type="email"
               id="clientEmail"
               name="clientEmail"
               value={formData.clientEmail}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="client@example.com"
+              disabled
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
             />
           </div>
 
@@ -211,7 +233,7 @@ function CreateProjectPage() {
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">Select current phase</option>
+              <option value="">Select phase</option>
               {phases.map((phase) => (
                 <option key={phase} value={phase}>
                   {phase}
@@ -259,7 +281,7 @@ function CreateProjectPage() {
           {/* Estimated Completion Date */}
           <div className="col-span-2 md:col-span-1">
             <label htmlFor="estCompDate" className="block text-sm font-medium text-gray-700 mb-1">
-              Estimated Completion Date
+              Est. Completion Date
             </label>
             <input
               type="date"
@@ -282,24 +304,24 @@ function CreateProjectPage() {
               value={formData.projDetails}
               onChange={handleChange}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              placeholder="Enter project details and description..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter project details..."
             />
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
+        {/* Submit Button */}
+        <div className="mt-6 flex justify-end gap-4">
           <Link
             to="/"
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200"
+            className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg transition duration-200"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>

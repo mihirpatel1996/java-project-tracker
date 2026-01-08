@@ -25,6 +25,10 @@ public class RegisterRequest {
     @Email(message = "Please provide a valid email address")
     private String email;
 
+    @NotBlank(message = "Company name is required")
+    @Size(min = 2, max = 100, message = "Company name must be between 2 and 100 characters")
+    private String companyName;
+
     @NotBlank(message = "Password is required")
     private String password;
 

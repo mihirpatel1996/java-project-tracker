@@ -41,11 +41,12 @@ api.interceptors.response.use(
 );
 
 export const authService = {
-  async register(firstName, lastName, email, password, confirmPassword) {
+  async register(firstName, lastName, email, companyName, password, confirmPassword) {
     const response = await api.post('/api/auth/register', {
       firstName,
       lastName,
       email,
+      companyName,
       password,
       confirmPassword,
     });

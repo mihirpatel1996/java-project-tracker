@@ -11,6 +11,7 @@ function RegisterPage() {
     firstName: '',
     lastName: '',
     email: '',
+    companyName: '',
     password: '',
     confirmPassword: '',
   });
@@ -44,6 +45,10 @@ function RegisterPage() {
     }
     if (!formData.email.trim()) {
       setError('Email is required');
+      return false;
+    }
+    if (!formData.companyName.trim()) {
+      setError('Company name is required');
       return false;
     }
     if (formData.password !== formData.confirmPassword) {
@@ -88,24 +93,12 @@ function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      await register(
-        formData.firstName,
-        formData.lastName,
-        formData.email,
-        formData.password,
-        formData.confirmPassword
-      );
+      await register(formData.firstName, formData.lastName, formData.email, formData.companyName, formData.password, formData.confirmPassword);
       // Redirect to verification page with email
       navigate('/verify', { state: { email: formData.email, fromRegister: true } });
     } catch (err) {
-      const errorData = err.response?.data;
-      if (errorData?.errors) {
-        // Handle validation errors object
-        const errorMessages = Object.values(errorData.errors).join(', ');
-        setError(errorMessages);
-      } else {
-        setError(errorData?.message || 'Registration failed. Please try again.');
-      }
+      const errorMessage = err.response?.data?.message || err.response?.data || 'Registration failed. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -160,7 +153,7 @@ function RegisterPage() {
                   First Name
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                     </svg>
@@ -173,7 +166,7 @@ function RegisterPage() {
                     onChange={handleChange}
                     required
                     autoComplete="given-name"
-                    className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                    className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                     placeholder="John"
                   />
                 </div>
@@ -185,7 +178,7 @@ function RegisterPage() {
                   Last Name
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                     </svg>
@@ -198,7 +191,7 @@ function RegisterPage() {
                     onChange={handleChange}
                     required
                     autoComplete="family-name"
-                    className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                    className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                     placeholder="Doe"
                   />
                 </div>
@@ -227,6 +220,31 @@ function RegisterPage() {
                   autoComplete="email"
                   className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                   placeholder="you@example.com"
+                />
+              </div>
+            </div>
+
+            {/* Company Name Input */}
+            <div>
+              <label htmlFor="companyName" className="block text-sm font-medium text-blue-200 mb-2">
+                Company Name
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  id="companyName"
+                  name="companyName"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  required
+                  autoComplete="organization"
+                  className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                  placeholder="Your Company Inc."
                 />
               </div>
             </div>
@@ -269,7 +287,7 @@ function RegisterPage() {
                   onChange={handleChange}
                   required
                   autoComplete="new-password"
-                  className={`w-full pl-12 pr-12 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ${
+                  className={`w-full pl-12 pr-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ${
                     formData.confirmPassword && formData.password !== formData.confirmPassword
                       ? 'border-red-500'
                       : formData.confirmPassword && formData.password === formData.confirmPassword

@@ -49,8 +49,8 @@ export function AuthProvider({ children }) {
     return response;
   };
 
-  const register = async (firstName, lastName, email, password, confirmPassword) => {
-    const response = await authService.register(firstName, lastName, email, password, confirmPassword);
+  const register = async (firstName, lastName, email, companyName, password, confirmPassword) => {
+    const response = await authService.register(firstName, lastName, email, companyName, password, confirmPassword);
     return response;
   };
 
@@ -91,6 +91,7 @@ export function AuthProvider({ children }) {
     logout,
     checkAuthStatus,
     isAuthenticated: !!user,
+    isAdmin: user?.role === 'ADMIN',
   };
 
   return (
