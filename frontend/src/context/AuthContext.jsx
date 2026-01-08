@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import authService from '../services/authService';
 
 const AuthContext = createContext(null);
-
-const API_BASE_URL = 'http://localhost:8080';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -14,43 +13,88 @@ export function AuthProvider({ children }) {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/user`, {
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
+      const token = authService.getToken();
+      if (token) {
+        // Try to get user from localStorage first for faster load
+        const storedUser = authService.getStoredUser();
+        if (storedUser) {
+          setUser(storedUser);
+        }
+        
+        // Then verify with backend
+        try {
+          const userData = await authService.getCurrentUser();
+          setUser(userData);
+          localStorage.setItem('user', JSON.stringify(userData));
+        } catch (error) {
+          // Token might be expired
+          console.error('Token validation failed:', error);
+          authService.logout();
+          setUser(null);
+        }
       } else {
         setUser(null);
       }
     } catch (error) {
-      console.log('Not authenticated');
+      console.error('Auth check failed:', error);
       setUser(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const login = () => {
-    window.location.href = `${API_BASE_URL}/oauth2/authorization/google`;
+  const login = async (email, password) => {
+    const response = await authService.login(email, password);
+    setUser(response.user);
+    return response;
   };
 
-  const logout = async () => {
-    try {
-      // Call backend logout
-      await fetch(`${API_BASE_URL}/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+  const register = async (firstName, lastName, email, password, confirmPassword) => {
+    const response = await authService.register(firstName, lastName, email, password, confirmPassword);
+    return response;
+  };
+
+  const verifyEmail = async (email, code) => {
+    const response = await authService.verifyEmail(email, code);
+    return response;
+  };
+
+  const resendCode = async (email) => {
+    const response = await authService.resendCode(email);
+    return response;
+  };
+
+  const forgotPassword = async (email) => {
+    const response = await authService.forgotPassword(email);
+    return response;
+  };
+
+  const resetPassword = async (email, code, newPassword) => {
+    const response = await authService.resetPassword(email, code, newPassword);
+    return response;
+  };
+
+  const logout = () => {
+    authService.logout();
     setUser(null);
-    window.location.href = '/login';
+  };
+
+  const value = {
+    user,
+    loading,
+    login,
+    register,
+    verifyEmail,
+    resendCode,
+    forgotPassword,
+    resetPassword,
+    logout,
+    checkAuthStatus,
+    isAuthenticated: !!user,
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, checkAuthStatus }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

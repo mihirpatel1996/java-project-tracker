@@ -8,35 +8,37 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/projects")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class ProjectController {
 
     @Autowired
     ProjectService service;
 
-    @GetMapping("/projects")
-    public List<Project> getAllProjects(){
+    @GetMapping
+    public List<Project> getAllProjects() {
         return service.getProjects();
     }
 
-    @GetMapping("/projects/{projId}")
-    public Project getProjectById(@PathVariable int projId){
+    @GetMapping("/{projId}")
+    public Project getProjectById(@PathVariable int projId) {
         return service.getProjectById(projId);
     }
 
-    @PostMapping("/projects")
-    public Project addProject(@RequestBody Project proj){
+    @PostMapping
+    public Project addProject(@RequestBody Project proj) {
         System.out.println("Received project for creation: " + proj);
         return service.addProject(proj);
     }
 
-    @PutMapping("/projects/{projId}")
-    public Project updateProject(@RequestBody Project proj){
+    @PutMapping("/{projId}")
+    public Project updateProject(@PathVariable int projId, @RequestBody Project proj) {
+        proj.setProjId(projId);
         return service.updateProject(proj);
     }
 
-    @DeleteMapping("/projects/{projId}")
-    public void deleteProject(@PathVariable int projId){
+    @DeleteMapping("/{projId}")
+    public void deleteProject(@PathVariable int projId) {
         service.deleteProject(projId);
     }
 }

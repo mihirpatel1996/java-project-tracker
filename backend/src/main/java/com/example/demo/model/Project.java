@@ -11,12 +11,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="projects")
+@Table(name = "projects")
 public class Project {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer projId;
+
     private String projName;
     private String clientCompany;
     private String clientEmail;
@@ -24,10 +25,12 @@ public class Project {
     private String projTitle;
     private String currPhase; // Preclinical, Phase I, II, III, Approval
     private String status; // Active, On Hold, Completed, Cancelled
+
+    @Column(columnDefinition = "TEXT")
     private String projDetails;
+
     private LocalDateTime startDate;
     private LocalDateTime estCompDate;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
-
 }

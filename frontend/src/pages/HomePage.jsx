@@ -130,6 +130,17 @@ function HomePage() {
     }
   };
 
+  // Generate initials from name
+  const getInitials = (name) => {
+    if (!name) return '?';
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -170,14 +181,10 @@ function HomePage() {
               {user && (
                 <>
                   <div className="flex items-center gap-3">
-                    {user.picture && (
-                      <img
-                        src={user.picture}
-                        alt={user.name}
-                        className="w-8 h-8 rounded-full"
-                        referrerPolicy="no-referrer"
-                      />
-                    )}
+                    {/* User Avatar with Initials */}
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                      {getInitials(user.name)}
+                    </div>
                     <div className="hidden sm:block">
                       <p className="text-sm font-medium text-gray-900">{user.name}</p>
                       <p className="text-xs text-gray-500">{user.email}</p>
