@@ -194,7 +194,8 @@ function HomePage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500">{user.companyName}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                      <p className="text-xs text-gray-400">{user.companyName}</p>
                     </div>
                   </div>
                   <button
