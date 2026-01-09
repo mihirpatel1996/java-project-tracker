@@ -34,28 +34,47 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # Database configuration (use RDS values in production)
-      - SPRING_DATASOURCE_URL=${DB_URL:-jdbc:mysql://mysql:3306/project_tracker?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+      # Application Configuration
+      - SPRING_APPLICATION_NAME=${APP_NAME:-Project Tracker}
+      - APP_NAME=${APP_NAME:-Project Tracker}
+      - APP_FRONTEND_URL=${FRONTEND_URL:-http://localhost}
+
+      # Server Configuration
+      - SERVER_PORT=8080
+
+      # Database Configuration
+      - SPRING_DATASOURCE_URL=${DB_URL:-jdbc:mysql://mysql:3306/project_tracker?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
       - SPRING_DATASOURCE_USERNAME=${DB_USERNAME:-root}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-rootpassword}
-      
-      # JPA settings
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+
+      # JPA / Hibernate Settings
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${DDL_AUTO:-update}
       - SPRING_JPA_SHOW_SQL=${SHOW_SQL:-false}
-      
+      - SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=${FORMAT_SQL:-false}
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLDialect
+
       # JWT Configuration
       - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
-      - JWT_EXPIRATION=${JWT_EXPIRATION:-86400000}
-      
-      # Email Configuration (optional)
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-7200000}
+
+      # Email Configuration
       - SPRING_MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
       - SPRING_MAIL_PORT=${MAIL_PORT:-587}
       - SPRING_MAIL_USERNAME=${MAIL_USERNAME:-}
       - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD:-}
-      
-      # App Configuration
-      - APP_NAME=${APP_NAME:-Project Tracker}
-      - FRONTEND_URL=${FRONTEND_URL:-http://localhost}
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED=true
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_CONNECTIONTIMEOUT=5000
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_TIMEOUT=5000
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_WRITETIMEOUT=5000
+
+      # Logging Configuration
+      - LOGGING_LEVEL_ROOT=${LOG_LEVEL_ROOT:-INFO}
+      - LOGGING_LEVEL_COM_EXAMPLE_DEMO=${LOG_LEVEL_APP:-INFO}
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY=${LOG_LEVEL_SECURITY:-WARN}
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_MAIL=${LOG_LEVEL_MAIL:-WARN}
     networks:
       - app-network
     restart: unless-stopped
