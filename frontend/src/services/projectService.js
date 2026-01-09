@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080';
+//const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 // Create axios instance
 const api = axios.create({
@@ -40,7 +41,7 @@ api.interceptors.response.use(
 export const projectService = {
   async getAllProjects() {
     try {
-      const response = await api.get('/projects');
+      const response = await api.get('/api/projects');
       return response.data;
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -50,7 +51,7 @@ export const projectService = {
 
   async getProjectById(id) {
     try {
-      const response = await api.get(`/projects/${id}`);
+      const response = await api.get(`/api/projects/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching project:', error);
@@ -61,7 +62,7 @@ export const projectService = {
   async createProject(project) {
     try {
       const { projId, ...payload } = project || {};
-      const response = await api.post('/projects', payload);
+      const response = await api.post('/api/projects', payload);
       return response.data;
     } catch (error) {
       console.error('Error creating project:', error);
@@ -71,7 +72,7 @@ export const projectService = {
 
   async updateProject(id, project) {
     try {
-      const response = await api.put(`/projects/${id}`, project);
+      const response = await api.put(`/api/projects/${id}`, project);
       return response.data;
     } catch (error) {
       console.error('Error updating project:', error);
@@ -81,7 +82,7 @@ export const projectService = {
 
   async deleteProject(id) {
     try {
-      const response = await api.delete(`/projects/${id}`);
+      const response = await api.delete(`/api/projects/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error deleting project:', error);
