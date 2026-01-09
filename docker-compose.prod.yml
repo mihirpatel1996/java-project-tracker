@@ -1,0 +1,63 @@
+# ============================================
+# Docker Compose - Production (EC2)
+# ============================================
+# This file uses pre-built images from Docker Hub
+# Usage: docker-compose -f docker-compose.prod.yml up -d
+# ============================================
+
+services:
+  # ----------------
+  # Frontend Service
+  # ----------------
+  frontend:
+    image: ${IMAGE_FRONTEND:-your-dockerhub-username/project-tracker-frontend:latest}
+    container_name: project-tracker-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # ----------------
+  # Backend Service
+  # ----------------
+  backend:
+    image: ${IMAGE_BACKEND:-your-dockerhub-username/project-tracker-backend:latest}
+    container_name: project-tracker-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # Database - RDS MySQL
+      - SPRING_DATASOURCE_URL=${DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      
+      # JPA settings
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=false
+      
+      # JWT Configuration
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-86400000}
+      
+      # Email Configuration
+      - SPRING_MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
+      - SPRING_MAIL_PORT=${MAIL_PORT:-587}
+      - SPRING_MAIL_USERNAME=${MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${MAIL_PASSWORD}
+      
+      # App Configuration
+      - APP_NAME=${APP_NAME:-Project Tracker}
+      - FRONTEND_URL=${FRONTEND_URL}
+    networks:
+      - app-network
+    restart: unless-stopped
+
+# ----------------
+# Networks
+# ----------------
+networks:
+  app-network:
+    driver: bridge
