@@ -18,11 +18,11 @@ This document explains how API requests work in different environments and why.
 
 ## Quick Reference
 
-| Environment | Command | API URL | CORS Needed? |
-|-------------|---------|---------|--------------|
-| Local Dev (no Docker) | `npm run dev` | `http://localhost:8080` | ✅ Yes |
-| Docker (local) | `docker compose up` | `` (empty/relative) | ❌ No |
-| Production (AWS) | `docker compose up` | `` (empty/relative) | ❌ No |
+| Environment           | Command             | API URL                 | CORS Needed? |
+| --------------------- | ------------------- | ----------------------- | ------------ |
+| Local Dev (no Docker) | `npm run dev`       | `http://localhost:8080` | ✅ Yes       |
+| Docker (local)        | `docker compose up` | `` (empty/relative)     | ❌ No        |
+| Production (AWS)      | `docker compose up` | `` (empty/relative)     | ❌ No        |
 
 ---
 
@@ -91,12 +91,12 @@ Browser: http://your-ec2-ip (port 80)
 ```
 
 **Why CORS is needed:**
+
 - Browser is on port 5173
 - API is on port 8080
 - Different ports = different origins
 - Browser checks: "Is 5173 allowed to call 8080?"
 - Backend must respond: "Yes, 5173 is allowed"
-
 
 ### Environment 2: Docker (Local Machine)
 
@@ -136,12 +136,12 @@ Browser: http://your-ec2-ip (port 80)
 ```
 
 **Why CORS is NOT needed:**
+
 - Browser loads page from `localhost:80`
 - Browser sends API request to `localhost:80/api/*`
 - Same host, same port = same origin
 - Browser doesn't check CORS for same-origin requests
 - Nginx internally forwards to backend (browser doesn't know)
-
 
 ### Environment 3: Production (AWS EC2)
 
@@ -183,27 +183,27 @@ Browser: http://your-ec2-ip (port 80)
 
 ```javascript
 // ❌ BAD - Only works in one environment
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = "http://localhost:8080";
 ```
 
-| Environment | Works? | Why |
-|-------------|--------|-----|
-| Local dev | ✅ | Ports match |
-| Docker | ❌ | CORS blocks localhost:80 → localhost:8080 |
-| Production | ❌ | localhost doesn't exist on server |
+| Environment | Works? | Why                                       |
+| ----------- | ------ | ----------------------------------------- |
+| Local dev   | ✅     | Ports match                               |
+| Docker      | ❌     | CORS blocks localhost:80 → localhost:8080 |
+| Production  | ❌     | localhost doesn't exist on server         |
 
 ### The Solution: Environment-Based URLs
 
 ```javascript
 // ✅ GOOD - Works in all environments
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 ```
 
-| Environment | VITE_API_URL | Result |
-|-------------|--------------|--------|
-| Local dev | `http://localhost:8080` | Direct call (CORS handled by backend) |
-| Docker | `` (empty) | Relative URL `/api/*` (Nginx proxies) |
-| Production | `` (empty) | Relative URL `/api/*` (Nginx proxies) |
+| Environment | VITE_API_URL            | Result                                |
+| ----------- | ----------------------- | ------------------------------------- |
+| Local dev   | `http://localhost:8080` | Direct call (CORS handled by backend) |
+| Docker      | `` (empty)              | Relative URL `/api/*` (Nginx proxies) |
+| Production  | `` (empty)              | Relative URL `/api/*` (Nginx proxies) |
 
 ---
 
@@ -226,23 +226,25 @@ VITE_API_URL=
 ### 3. Update `frontend/src/services/authService.js`
 
 Change this line:
+
 ```javascript
 // Before
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = "http://localhost:8080";
 
 // After
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 ```
 
 ### 4. Update `frontend/src/services/projectService.js`
 
 Same change:
+
 ```javascript
 // Before
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = "http://localhost:8080";
 
 // After
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 ```
 
 ### 5. Backend CORS (Already configured)
@@ -302,18 +304,19 @@ http://your-ec2-ip
 ### CORS Error in Docker
 
 **Symptom:**
+
 ```
-Access to XMLHttpRequest at 'http://localhost:8080/api/...' 
+Access to XMLHttpRequest at 'http://localhost:8080/api/...'
 from origin 'http://localhost' has been blocked by CORS policy
 ```
 
 **Cause:** Frontend is calling `localhost:8080` directly instead of using relative URLs.
 
 **Fix:** Make sure:
+
 1. `.env.production` has `VITE_API_URL=` (empty)
 2. Service files use `import.meta.env.VITE_API_URL || ''`
 3. Rebuild: `docker compose --profile local up --build`
-
 
 ### API Returns 404 in Docker
 
@@ -322,10 +325,10 @@ from origin 'http://localhost' has been blocked by CORS policy
 **Cause:** Nginx not forwarding to backend correctly.
 
 **Check:**
+
 1. Backend container is running: `docker compose ps`
 2. Nginx config has correct proxy_pass: `proxy_pass http://backend:8080/api/`
 3. Backend logs: `docker compose logs backend`
-
 
 ### Works Locally, Fails in Docker
 
@@ -334,6 +337,7 @@ from origin 'http://localhost' has been blocked by CORS policy
 **Cause:** Wrong environment file loaded or old build cached.
 
 **Fix:**
+
 ```bash
 # Force rebuild without cache
 docker compose --profile local down
@@ -341,12 +345,12 @@ docker compose --profile local build --no-cache
 docker compose --profile local up
 ```
 
-
 ### Cannot Connect to Database in Docker
 
 **Symptom:** Backend fails with database connection error.
 
 **Check:**
+
 1. MySQL container is running: `docker compose ps`
 2. MySQL is healthy: `docker compose logs mysql`
 3. `.env` has correct DB_URL: `jdbc:mysql://mysql:3306/projecttracker`
