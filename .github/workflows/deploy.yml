@@ -42,7 +42,6 @@ jobs:
         working-directory: ./backend
         run: |
           chmod +x ./mvnw
-#          ./mvnw test
           ./mvnw package -DskipTests
 
   # ----------------
