@@ -16,9 +16,9 @@ on:
 
 env:
   DOCKER_REGISTRY: docker.io  # or use ECR
-  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  IMAGE_NAME_BACKEND: ${{ secrets.DOCKER_USERNAME }}/project-tracker-backend
-  IMAGE_NAME_FRONTEND: ${{ secrets.DOCKER_USERNAME }}/project-tracker-frontend
+  DOCKER_USERNAME: mihirpatel4798
+  IMAGE_NAME_BACKEND: mihirpatel4798/project-tracker-backend
+  IMAGE_NAME_FRONTEND: mihirpatel4798/project-tracker-frontend
 
 jobs:
   # ----------------
